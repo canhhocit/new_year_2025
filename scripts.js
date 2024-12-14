@@ -39,8 +39,8 @@ let stageW, stageH;
 // All quality globals will be overwritten and updated via `configDidUpdate`.
 let quality = 1;
 let isLowQuality = false;
-let isNormalQuality = true;
-let isHighQuality = false;
+let isNormalQuality = false;
+let isHighQuality = true;
 
 const QUALITY_LOW = 1;
 const QUALITY_NORMAL = 2;
@@ -218,9 +218,6 @@ const store = {
 if (!IS_HEADER) {
 	store.load();
 }
-
-// Actions
-// ---------
 
 function togglePause(toggle) {
 	const paused = store.state.paused;
@@ -784,17 +781,17 @@ function randomFastShell() {
 
 const shellTypes = {
 	'Random': randomShell,
-	'Crackle': crackleShell,
-	'Crossette': crossetteShell,
-	'Crysanthemum': crysanthemumShell,
-	'Falling Leaves': fallingLeavesShell,
-	'Floral': floralShell,
-	'Ghost': ghostShell,
-	'Horse Tail': horsetailShell,
-	'Palm': palmShell,
-	'Ring': ringShell,
-	'Strobe': strobeShell,
-	'Willow': willowShell
+	'Kiểu 1*': crackleShell,
+	'Kiểu 2*': crossetteShell,
+	'Kiểu 3*': crysanthemumShell,
+	'Kiểu 4': fallingLeavesShell,
+	'Kiểu 5': floralShell,
+	'Kiểu 6': ghostShell,
+	'Kiểu 7': horsetailShell,
+	'Kiểu 8': palmShell,
+	'Kiểu 9': ringShell,
+	'Kiểu 10': strobeShell,
+	'Kiểu 11*': willowShell
 };
 
 const shellNames = Object.keys(shellTypes);
@@ -819,15 +816,15 @@ function init() {
 	appNodes.shellSize.innerHTML = options;
 	
 	setOptionsForSelect(appNodes.quality, [
-		{ label: 'Low', value: QUALITY_LOW },
-		{ label: 'Normal', value: QUALITY_NORMAL },
-		{ label: 'High', value: QUALITY_HIGH }
+		{ label: 'Thấp', value: QUALITY_LOW },
+		{ label: 'Bình thường', value: QUALITY_NORMAL },
+		{ label: 'Cao**', value: QUALITY_HIGH }
 	]);
 	
 	setOptionsForSelect(appNodes.skyLighting, [
-		{ label: 'None', value: SKY_LIGHT_NONE },
-		{ label: 'Dim', value: SKY_LIGHT_DIM },
-		{ label: 'Normal', value: SKY_LIGHT_NORMAL }
+		{ label: 'Không', value: SKY_LIGHT_NONE },
+		{ label: 'Mờ', value: SKY_LIGHT_DIM },
+		{ label: 'Bình thường', value: SKY_LIGHT_NORMAL }
 	]);
 	
 	// 0.9 is mobile default
@@ -1638,24 +1635,6 @@ function crackleEffect(star) {
 }
 
 
-
-/**
- * Shell can be constructed with options:
- *
- * spreadSize:      Size of the burst.
- * starCount: Number of stars to create. This is optional, and will be set to a reasonable quantity for size if omitted.
- * starLife:
- * starLifeVariation:
- * color:
- * glitterColor:
- * glitter: One of: 'light', 'medium', 'heavy', 'streamer', 'willow'
- * pistil:
- * pistilColor:
- * streamers:
- * crossette:
- * floral:
- * crackle:
- */
 class Shell {
 	constructor(options) {
 		Object.assign(this, options);
@@ -2187,14 +2166,6 @@ const soundManager = {
 	},
 
 	resumeAll() {
-		// Play a sound with no volume for iOS. This 'unlocks' the audio context when the user first enables sound.
-		this.playSound('lift', 0);
-		// Chrome mobile requires interaction before starting audio context.
-		// The sound toggle button is triggered on 'touchstart', which doesn't seem to count as a full
-		// interaction to Chrome. I guess it needs a click? At any rate if the first thing the user does
-		// is enable audio, it doesn't work. Using a setTimeout allows the first interaction to be registered.
-		// Perhaps a better solution is to track whether the user has interacted, and if not but they try enabling
-		// sound, show a tooltip that they should tap again to enable sound.
 		setTimeout(() => {
 			this.ctx.resume();
 		}, 250);
@@ -2216,10 +2187,6 @@ const soundManager = {
 	playSound(type, scale=1) {
 		// Ensure `scale` is within valid range.
 		scale = MyMath.clamp(scale, 0, 1);
-
-		// Disallow starting new sounds if sound is disabled, app is running in slow motion, or paused.
-		// Slow motion check has some wiggle room in case user doesn't finish dragging the speed bar
-		// *all* the way back.
 		if (!canPlaySoundSelector() || simSpeed < 0.95) {
 			return;
 		}
@@ -2278,7 +2245,7 @@ if (IS_HEADER) {
 	init();
 } else {
 	// Allow status to render, then preload assets and start app.
-	setLoadingStatus('Lighting Fuses');
+	setLoadingStatus('Đang châm ngòi...');
 	setTimeout(() => {
 		soundManager.preload()
 		.then(
